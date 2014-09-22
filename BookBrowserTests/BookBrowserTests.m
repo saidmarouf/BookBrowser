@@ -132,26 +132,25 @@
 }
 
 - (void) testAPIResultType {
-
+    
     /*
-     semaphore approach not mine
+     Update using latest XCTest asynchronous techniques...
      */
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-
+    XCTestExpectation *apiResultTypeExpectation = [self expectationWithDescription:@"Result is NSArray"];
+    
     Class expectedClass = [NSArray class];
     [[_bVC bookEngine] booksForCategory:@"Wma8RpqpC6UcWye2U8qUg-6a21w" completionBlock:^(NSArray *books) {
         XCTAssertTrue([books isKindOfClass:expectedClass], @"Result of API is not an Array!");
-        
-        dispatch_semaphore_signal(semaphore);
-
+        [apiResultTypeExpectation fulfill];
     } errorBlock:^(NSError *error) {
         XCTFail(@"API Error while Unit Testing...");
-        dispatch_semaphore_signal(semaphore);
+        [apiResultTypeExpectation fulfill];
     }];
     
     //willing to wait 3 seconds..
-    while(dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:3]];
+    [self waitForExpectationsWithTimeout:3 handler:^(NSError *error) {
+        
+    }];
 }
 
 - (void)testPerformanceExample {
